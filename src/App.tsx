@@ -17,6 +17,14 @@ import { Footer } from './components/Footer';
 import { PRODUCTS, BRAND_INFO, CATEGORIES } from './data';
 import { Product, CartItem, CategoryId, BrandInfo } from './types';
 import { AdminDashboard } from './components/AdminDashboard';
+import { 
+  subscribeToBrandInfo, 
+  subscribeToProducts, 
+  updateBrandInfoInDb, 
+  saveProductToDb, 
+  deleteProductFromDb, 
+  restoreDefaultsInDb 
+} from './firebase';
 
 export default function App() {
   // Theme state
@@ -28,23 +36,8 @@ export default function App() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
-  // Dynamic brand state with LocalStorage persistence
-  const [brandInfo, setBrandInfo] = useState<BrandInfo>(() => {
-    const saved = localStorage.getItem('brandInfo');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error('Error reading brandInfo from localStorage:', e);
-      }
-    }
-    return BRAND_INFO;
-  });
-
-  // Sync brandInfo to localStorage
-  useEffect(() => {
-    localStorage.setItem('brandInfo', JSON.stringify(brandInfo));
-  }, [brandInfo]);
+  // Dynamic brand state synchronized with Firebase Firestore
+  const [brandInfo, setBrandInfo] = useState<BrandInfo>(BRAND_INFO);
 
   // Cart state
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
@@ -52,25 +45,26 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Dynamic products state with LocalStorage persistence
-  const [products, setProducts] = useState<Product[]>(() => {
-    const saved = localStorage.getItem('products');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error('Error reading products from localStorage:', e);
-      }
-    }
-    return PRODUCTS;
-  });
+  // Dynamic products state synchronized with Firebase Firestore
+  const [products, setProducts] = useState<Product[]>(PRODUCTS);
 
   const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
 
-  // Sync products state to localStorage
+  // Set up Firebase listeners
   useEffect(() => {
-    localStorage.setItem('products', JSON.stringify(products));
-  }, [products]);
+    const unsubscribeBrand = subscribeToBrandInfo(BRAND_INFO, (info) => {
+      setBrandInfo(info);
+    });
+
+    const unsubscribeProducts = subscribeToProducts(PRODUCTS, (prods) => {
+      setProducts(prods);
+    });
+
+    return () => {
+      unsubscribeBrand();
+      unsubscribeProducts();
+    };
+  }, []);
 
   // Category and navigation states
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
@@ -452,6 +446,7 @@ export default function App() {
         cartItems={cartItems}
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveItem}
+        brandInfo={brandInfo}
       />
 
       {/* QR Code Sharing Dialog */}
@@ -466,13 +461,13 @@ export default function App() {
         {isAdminOpen && (
           <AdminDashboard
             products={products}
-            onAddProduct={(newProd) => setProducts([...products, newProd])}
-            onUpdateProduct={(updatedProd) => setProducts(products.map(p => p.id === updatedProd.id ? updatedProd : p))}
-            onDeleteProduct={(id) => setProducts(products.filter(p => p.id !== id))}
-            onRestoreDefaults={() => setProducts(PRODUCTS)}
+            onAddProduct={saveProductToDb}
+            onUpdateProduct={saveProductToDb}
+            onDeleteProduct={deleteProductFromDb}
+            onRestoreDefaults={() => restoreDefaultsInDb(brandInfo, PRODUCTS)}
             brandInfo={brandInfo}
-            onUpdateBrand={setBrandInfo}
-            onRestoreBrand={() => setBrandInfo(BRAND_INFO)}
+            onUpdateBrand={updateBrandInfoInDb}
+            onRestoreBrand={() => updateBrandInfoInDb(BRAND_INFO)}
             onClose={() => setIsAdminOpen(false)}
           />
         )}

@@ -1,9 +1,8 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Plus, Minus, Trash2, ShoppingBag, MessageCircle } from 'lucide-react';
-import { CartItem } from '../types';
+import { CartItem, BrandInfo } from '../types';
 import { formatPrice } from './ProductCard';
-import { BRAND_INFO } from '../data';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -11,6 +10,7 @@ interface CartDrawerProps {
   cartItems: CartItem[];
   onUpdateQuantity: (productId: string, delta: number) => void;
   onRemoveItem: (productId: string) => void;
+  brandInfo: BrandInfo;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -19,6 +19,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   cartItems,
   onUpdateQuantity,
   onRemoveItem,
+  brandInfo,
 }) => {
   if (!isOpen) return null;
 
@@ -36,7 +37,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
     const message = `Hola 👋\n\nQuiero realizar el siguiente pedido:\n\n${itemsText}\nTotal: ${formatPrice(total)}`;
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${BRAND_INFO.phone.replace('+', '')}?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/${brandInfo.phone.replace('+', '')}?text=${encodedMessage}`;
 
     window.open(whatsappUrl, '_blank');
   };
@@ -202,7 +203,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
                 <p className="text-[11px] text-center text-neutral-500 dark:text-neutral-400">
                   Se generará una plantilla de mensaje automática para enviar al WhatsApp: <br className="hidden sm:block" />
-                  <span className="font-semibold text-neutral-700 dark:text-neutral-300">{BRAND_INFO.whatsapp}</span>
+                  <span className="font-semibold text-neutral-700 dark:text-neutral-300">{brandInfo.whatsapp}</span>
                 </p>
               </div>
             )}
