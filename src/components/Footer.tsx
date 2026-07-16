@@ -131,14 +131,14 @@ export const Footer: React.FC<FooterProps> = ({ brandInfo, onScrollToTop }) => {
 
               {/* Action trigger button */}
               <a
-                href={`https://maps.google.com/?q=${encodeURIComponent(brandInfo.address)}`}
+                href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(brandInfo.address)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-750 text-white font-display font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 border border-white/5 transition-all duration-200"
                 id="footer-how-to-arrive-btn"
               >
                 <ExternalLink className="w-4 h-4 text-brand-yellow" />
-                <span>Cómo Llegar en Google Maps</span>
+                <span>Cómo Llegar (Ver Mapa)</span>
               </a>
 
             </div>

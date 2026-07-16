@@ -9,6 +9,7 @@ import {
 import { Product, CategoryId, BrandInfo } from '../types';
 import { CATEGORIES } from '../data';
 import { formatPrice } from './ProductCard';
+import { compressImage } from '../utils/imageCompressor';
 
 interface AdminDashboardProps {
   products: Product[];
@@ -45,11 +46,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [brandSlogan, setBrandSlogan] = useState(brandInfo.slogan);
   const [brandPhone, setBrandPhone] = useState(brandInfo.phone);
   const [brandAddress, setBrandAddress] = useState(brandInfo.address);
-  const [brandHours, setBrandHours] = useState(brandInfo.hours);
-  const [brandInstagram, setBrandInstagram] = useState(brandInfo.instagram || '');
-  const [brandFacebook, setBrandFacebook] = useState(brandInfo.facebook || '');
+  const [brandHours, setBrandHours] = useState(brandInfo.schedule || '');
+  const [brandInstagram, setBrandInstagram] = useState(brandInfo.social?.instagram || '');
+  const [brandFacebook, setBrandFacebook] = useState(brandInfo.social?.facebook || '');
   const [brandLogo, setBrandLogo] = useState(brandInfo.logoUrl || '');
-  const [brandBanner, setBrandBanner] = useState(brandInfo.bannerUrl || '');
+  const [brandBanner, setBrandBanner] = useState(brandInfo.heroImageUrl || '');
   const [brandQR, setBrandQR] = useState(brandInfo.qrUrl || '');
 
   const [brandSavedMessage, setBrandSavedMessage] = useState<string | null>(null);
@@ -60,11 +61,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setBrandSlogan(brandInfo.slogan);
     setBrandPhone(brandInfo.phone);
     setBrandAddress(brandInfo.address);
-    setBrandHours(brandInfo.hours);
-    setBrandInstagram(brandInfo.instagram || '');
-    setBrandFacebook(brandInfo.facebook || '');
+    setBrandHours(brandInfo.schedule || '');
+    setBrandInstagram(brandInfo.social?.instagram || '');
+    setBrandFacebook(brandInfo.social?.facebook || '');
     setBrandLogo(brandInfo.logoUrl || '');
-    setBrandBanner(brandInfo.bannerUrl || '');
+    setBrandBanner(brandInfo.heroImageUrl || '');
     setBrandQR(brandInfo.qrUrl || '');
   }, [brandInfo]);
 
@@ -90,8 +91,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
+      reader.onloadend = async () => {
+        const result = reader.result as string;
+        const compressed = await compressImage(result, 600, 450, 0.75);
+        setImage(compressed);
       };
       reader.readAsDataURL(file);
     }
@@ -112,8 +115,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const file = e.dataTransfer.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
+      reader.onloadend = async () => {
+        const result = reader.result as string;
+        const compressed = await compressImage(result, 600, 450, 0.75);
+        setImage(compressed);
       };
       reader.readAsDataURL(file);
     }
@@ -666,15 +671,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               onSubmit={(e) => {
                 e.preventDefault();
                 onUpdateBrand({
+                  ...brandInfo,
                   name: brandName,
                   slogan: brandSlogan,
                   phone: brandPhone,
+                  whatsapp: brandPhone,
                   address: brandAddress,
-                  hours: brandHours,
-                  instagram: brandInstagram,
-                  facebook: brandFacebook,
+                  schedule: brandHours,
+                  social: {
+                    facebook: brandFacebook,
+                    instagram: brandInstagram,
+                    tiktok: brandInfo.social?.tiktok || ''
+                  },
                   logoUrl: brandLogo,
-                  bannerUrl: brandBanner,
+                  heroImageUrl: brandBanner,
                   qrUrl: brandQR
                 });
                 setBrandSavedMessage('¡Identidad de marca guardada con éxito en tiempo real!');
@@ -851,7 +861,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       const file = e.dataTransfer.files?.[0];
                       if (file) {
                         const reader = new FileReader();
-                        reader.onloadend = () => setBrandLogo(reader.result as string);
+                        reader.onloadend = async () => {
+                          const result = reader.result as string;
+                          const compressed = await compressImage(result, 256, 256, 0.8);
+                          setBrandLogo(compressed);
+                        };
                         reader.readAsDataURL(file);
                       }
                     }}
@@ -864,7 +878,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         const file = e.target.files?.[0];
                         if (file) {
                           const reader = new FileReader();
-                          reader.onloadend = () => setBrandLogo(reader.result as string);
+                          reader.onloadend = async () => {
+                            const result = reader.result as string;
+                            const compressed = await compressImage(result, 256, 256, 0.8);
+                            setBrandLogo(compressed);
+                          };
                           reader.readAsDataURL(file);
                         }
                       }}
@@ -923,7 +941,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       const file = e.dataTransfer.files?.[0];
                       if (file) {
                         const reader = new FileReader();
-                        reader.onloadend = () => setBrandBanner(reader.result as string);
+                        reader.onloadend = async () => {
+                          const result = reader.result as string;
+                          const compressed = await compressImage(result, 1200, 600, 0.7);
+                          setBrandBanner(compressed);
+                        };
                         reader.readAsDataURL(file);
                       }
                     }}
@@ -936,7 +958,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         const file = e.target.files?.[0];
                         if (file) {
                           const reader = new FileReader();
-                          reader.onloadend = () => setBrandBanner(reader.result as string);
+                          reader.onloadend = async () => {
+                            const result = reader.result as string;
+                            const compressed = await compressImage(result, 1200, 600, 0.7);
+                            setBrandBanner(compressed);
+                          };
                           reader.readAsDataURL(file);
                         }
                       }}
@@ -992,7 +1018,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       const file = e.dataTransfer.files?.[0];
                       if (file) {
                         const reader = new FileReader();
-                        reader.onloadend = () => setBrandQR(reader.result as string);
+                        reader.onloadend = async () => {
+                          const result = reader.result as string;
+                          const compressed = await compressImage(result, 400, 400, 0.8);
+                          setBrandQR(compressed);
+                        };
                         reader.readAsDataURL(file);
                       }
                     }}
@@ -1005,7 +1035,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         const file = e.target.files?.[0];
                         if (file) {
                           const reader = new FileReader();
-                          reader.onloadend = () => setBrandQR(reader.result as string);
+                          reader.onloadend = async () => {
+                            const result = reader.result as string;
+                            const compressed = await compressImage(result, 400, 400, 0.8);
+                            setBrandQR(compressed);
+                          };
                           reader.readAsDataURL(file);
                         }
                       }}
