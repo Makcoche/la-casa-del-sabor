@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Custom brand colors to match "La Casa del Sabor" */
+  --color-brand-yellow: #F7A600;
+  --color-brand-brown: #4B2E20;
+  --color-brand-brown-light: #6E473B;
+  --color-brand-brown-dark: #2D1A12;
+  --color-brand-black: #1E1E1E;
+  --color-brand-gray: #2A2A2A;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(75, 46, 32, 0.2);
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(247, 166, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 46, 32, 0.4);
+}
+
+/* Base custom classes for culinary ambience & Bento Grid */
+.bg-gradient-warm {
+  background: linear-gradient(135deg, #4B2E20 0%, #1E1E1E 100%);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(75, 46, 32, 0.08);
+}
+
+.dark .glass-panel {
+  background: rgba(30, 30, 30, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.premium-card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  border-radius: 24px;
+}
+
+.premium-card:hover {
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+}
+
+.btn-primary {
+  background-color: #F7A600;
+  color: #1E1E1E;
+  font-weight: 700;
+  border-radius: 99px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 20px rgba(247, 166, 0, 0.45);
+}
+
+.fire-glow {
+  box-shadow: 0 0 20px rgba(247, 166, 0, 0.15);
+}
+
+.fire-glow-hover:hover {
+  box-shadow: 0 0 25px rgba(247, 166, 0, 0.35);
+}
+
+.category-pill {
+  padding: 8px 16px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.category-pill.active {
+  background: #F7A600;
+  color: #1E1E1E;
+  font-weight: bold;
+}
+

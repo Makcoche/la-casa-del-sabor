@@ -1,0 +1,6 @@
+{
+  "name": "La Casa del Sabor",
+  "description": "Menú Digital Premium para La Casa del Sabor. Arepas rellenas artesanales y más, optimizado para móvil y escritorio con carrito de compras y pedidos vía WhatsApp.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
